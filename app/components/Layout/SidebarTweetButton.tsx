@@ -1,12 +1,17 @@
 "use client";
-import React from "react";
+import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FaFeather } from "react-icons/fa";
+import useLoginModel from "@/hooks/useLoginModel";
 const SidebarTweetButton = () => {
   const router = useRouter();
+  const loginModal = useLoginModel();
+  const onClick = useCallback(() => {
+    loginModal.onOpen();
+  }, [loginModal]);
 
   return (
-    <div onClick={() => router.push("/")}>
+    <div onClick={onClick}>
       <div
         className=" mt-6
 lg:hidden
@@ -31,8 +36,9 @@ hover:bg-opacity-90
 transition
 cursor-pointer"
       >
-
-        <p className="hidden font-semibold lg:block text-center text-[20px] text-white ">Tweet</p>
+        <p className="hidden font-semibold lg:block text-center text-[20px] text-white ">
+          Tweet
+        </p>
       </div>
     </div>
   );
