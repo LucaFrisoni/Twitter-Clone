@@ -3,8 +3,6 @@ import React, { useCallback } from "react";
 import { AiOutlineClose } from "react-icons/ai";
 import Button from "./Button";
 
-import * as Dialog from "@radix-ui/react-dialog";
-import { IoMdClose } from "react-icons/io";
 
 interface ModalProps {
   isOpen?: boolean;
