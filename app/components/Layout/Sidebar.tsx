@@ -1,3 +1,4 @@
+"use client";
 import React from "react";
 import { BiLogOut } from "react-icons/bi";
 import { BsHouseFill, BsBellFill } from "react-icons/bs";
@@ -5,6 +6,9 @@ import { FaUser } from "react-icons/fa";
 import Sidebarlogo from "./Sidebarlogo";
 import SidebarItem from "./SidebarItem";
 import SidebarTweetButton from "./SidebarTweetButton";
+import { signOut, useSession } from "next-auth/react";
+import { data } from "autoprefixer";
+
 const Sidebar = () => {
   const items = [
     {
@@ -24,6 +28,8 @@ const Sidebar = () => {
     },
   ];
 
+  const { data: session, status } = useSession();
+  console.log("session =>", session);
   return (
     <div className=" col-span-1 h-full pr-4 md:pr-6">
       <div className=" flex flex-col items-end">
@@ -37,7 +43,14 @@ const Sidebar = () => {
               label={nav.label}
             />
           ))}
-          <SidebarItem  icon={BiLogOut} onClick={() => {}} label="logout" />
+          {session?.user && (
+            <SidebarItem
+              icon={BiLogOut}
+              onClick={() => signOut()}
+              label="logout"
+            />
+          )}
+
           <SidebarTweetButton />
         </div>
       </div>
