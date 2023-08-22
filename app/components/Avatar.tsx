@@ -1,5 +1,6 @@
 "use client";
 import { useUser } from "@/hooks/useUser";
+import { User } from "@/types";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
@@ -12,7 +13,7 @@ interface AvatarProps {
 
 const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasborder }) => {
   const router = useRouter();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState<User | null>(null);
 
   const fetchUser = async () => {
     const { user } = await useUser(userId);
@@ -31,7 +32,7 @@ const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasborder }) => {
     },
     [router, userId]
   );
-  console.log(user);
+
   return (
     <div
       className={`

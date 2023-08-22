@@ -1,6 +1,7 @@
 "use client";
 
 
+import EditModal from "@/app/components/modals/EditModal";
 import LoginModal from "@/app/components/modals/LoginModal";
 import RegisterModal from "@/app/components/modals/RegisterModal";
 import React, { useEffect, useState } from "react";
@@ -20,6 +21,7 @@ const ModalProvider = () => {
     <div>
     <LoginModal />
     <RegisterModal />
+    <EditModal />
     </div>
   );
 };

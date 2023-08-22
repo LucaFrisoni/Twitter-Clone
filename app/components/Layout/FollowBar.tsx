@@ -1,7 +1,7 @@
 import { useUsers } from "@/hooks/useUser";
 import React from "react";
 import Avatar from "../Avatar";
-
+export const revalidate = 0;
 const FollowBar = async () => {
   const users = await useUsers();
   if (users.length === 0) {

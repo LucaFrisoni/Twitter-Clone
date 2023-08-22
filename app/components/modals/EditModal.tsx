@@ -1,0 +1,135 @@
+"use client";
+import React, { useCallback, useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+
+import useEditModel from "@/hooks/useEditModel";
+import { useUserEmail } from "@/hooks/useUser";
+
+import { toast } from "react-hot-toast";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+
+import Modal from "../Modal";
+import Input from "../Input";
+import { User, Post, Comment, Notification } from "../../../types"; // Importa los tipos desde tu archivo types.ts
+import ImageUpload from "../ImageUpload";
+
+
+
+const EditModal = () => {
+  const { data: session, status } = useSession();
+  const editModal = useEditModel();
+  const router = useRouter();
+
+  const [profileImage, setProfileImage] = useState<string | undefined>("");
+  const [coverImage, setCoverImage] = useState<string | undefined>("");
+  const [name, setName] = useState<string | undefined>("");
+  const [username, setUserName] = useState<string | undefined>("");
+  const [bio, setBio] = useState<string | undefined>("");
+  const [email, setEmail] = useState<string | undefined>("");
+
+  const [user, setUser] = useState<User | null>(null);
+  const fetchUser = async () => {
+    const user = await useUserEmail(session?.user?.email);
+    setUser(user);
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+    // Llamar a "fetchUser" dentro de "useEffect" para que se ejecute después del montaje.
+  }, [session]);
+
+  useEffect(() => {
+    setEmail(user?.email);
+    setProfileImage(user?.profileImage);
+    setCoverImage(user?.coverImage);
+    setName(user?.name);
+    setUserName(user?.username);
+    setBio(user?.bio);
+  }, [
+    user?.email,
+    user?.profileImage,
+    user?.coverImage,
+    user?.name,
+    user?.bio,
+    user?.username,
+  ]);
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  const onSubmit = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      await axios.patch("/api/edit", {
+        email,
+        name,
+        profileImage,
+        coverImage,
+        bio,
+        username,
+      });
+      editModal.onClose();
+      router.refresh();
+    
+      toast.success("Update");
+    } catch (error) {
+      toast.error("Something went wrong");
+    } finally {
+      setIsLoading(false);
+    }
+  }, [bio, name, username, profileImage, coverImage, email, router]);
+
+  const bodyContent = (
+    <div className=" flex flex-col gap-4">
+      <ImageUpload
+        value={profileImage}
+        disabled={isLoading}
+        onChange={(image) => {
+          setProfileImage(image);
+        
+        }}
+        label="Upload profile image"
+      />
+      <ImageUpload
+        value={coverImage}
+        disabled={isLoading}
+        onChange={(image) => setCoverImage(image)}
+        label="Upload cover image"
+      />
+      <Input
+        placeholder="Name"
+        onChange={(e) => setName(e.target.value)}
+        value={name}
+        disabled={isLoading}
+      />
+      <Input
+        placeholder="Username"
+        onChange={(e) => setUserName(e.target.value)}
+        value={username}
+        disabled={isLoading}
+      />
+      <Input
+        placeholder="Bio"
+        onChange={(e) => setBio(e.target.value)}
+        value={bio}
+        disabled={isLoading}
+      />
+    </div>
+  );
+
+  return (
+    <Modal
+      disabled={isLoading}
+      isOpen={editModal.isOpen}
+      title="Edit your profile"
+      actionLabel="Save"
+      onClose={editModal.onClose}
+      onSubmit={onSubmit}
+      body={bodyContent}
+    />
+  );
+};
+
+export default EditModal;

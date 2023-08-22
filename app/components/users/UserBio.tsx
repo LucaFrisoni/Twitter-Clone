@@ -4,6 +4,7 @@ import React, { useMemo } from "react";
 import { format } from "date-fns";
 import Button from "../Button";
 import { BiCalendar } from "react-icons/bi";
+import useEditModel from "@/hooks/useEditModel";
 
 interface UserBioProps {
   user: any;
@@ -12,6 +13,9 @@ interface UserBioProps {
 const UserBio: React.FC<UserBioProps> = ({ user }) => {
   const { data: session, status } = useSession();
   console.log("Session", session);
+
+  const editModal = useEditModel();
+
   const createdAt = useMemo(() => {
     return format(new Date(user?.user.createdAt), "MMMM yyyy");
   }, [user?.user.createdAt]);
@@ -20,7 +24,7 @@ const UserBio: React.FC<UserBioProps> = ({ user }) => {
     <div className=" border-b-[1px] border-neutral-800 pb-4">
       <div className=" flex justify-end p-2">
         {session?.user?.email == user?.user.email ? (
-          <Button secondary label="Edit" onClick={() => {}} />
+          <Button secondary label="Edit" onClick={editModal.onOpen} />
         ) : (
           <Button onClick={() => {}} label="Follow" secondary />
         )}
@@ -31,7 +35,7 @@ const UserBio: React.FC<UserBioProps> = ({ user }) => {
           <p className=" text-white text-2xl font-semibold">
             {user?.user.name}
           </p>
-          <p className=" text-md text-neutral-500">@{user?.user.name}</p>
+          <p className=" text-md text-neutral-500">@{user?.user.username}</p>
         </div>
 
         <div className=" flex flex-col mt-4 ">

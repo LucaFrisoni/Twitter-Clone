@@ -2,6 +2,7 @@ import React from "react";
 import Sidebar from "./Layout/Sidebar";
 import FollowBar from "./Layout/FollowBar";
 
+export const revalidate = 0;
 interface LayoutProps {
   children: React.ReactNode;
 }
