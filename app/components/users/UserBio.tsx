@@ -1,10 +1,15 @@
 "use client";
 import { useSession } from "next-auth/react";
-import React, { useMemo } from "react";
+import React, { useCallback, useMemo } from "react";
 import { format } from "date-fns";
 import Button from "../Button";
 import { BiCalendar } from "react-icons/bi";
 import useEditModel from "@/hooks/zustandHooks/useEditModel";
+import useLoginModel from "@/hooks/zustandHooks/useLoginModel";
+import { useSelector } from "react-redux";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import { toast } from "react-hot-toast";
 
 interface UserBioProps {
   user: any;
@@ -12,9 +17,42 @@ interface UserBioProps {
 
 const UserBio: React.FC<UserBioProps> = ({ user }) => {
   const { data: session, status } = useSession();
-
+  const userr = useSelector((state: any) => state.user);
 
   const editModal = useEditModel();
+  const loginModal = useLoginModel();
+  const router = useRouter();
+
+  const isFollowing = useMemo(() => {
+    const list = user?.user.followingIds || [];
+    return list.includes(userr?.id);
+  }, [user?.user.followingIds, userr]);
+
+  const handleFollow = useCallback(async () => {
+    if (!session) {
+      return loginModal.onOpen();
+    }
+    try {
+      if (isFollowing) {
+        await axios.delete(
+          `/api/follow?userId=${user?.user.id}&currentUserId=${userr.id}`
+        );
+
+        toast.success("User Unfollowed");
+        router.refresh();
+      } else {
+        await axios.post("/api/follow", {
+          userId: user?.user.id,
+          currentUserId: userr.id,
+        });
+
+        toast.success("User Followed");
+        router.refresh();
+      }
+    } catch (error) {
+      toast.error("Something went wrong");
+    }
+  }, [user, userr, isFollowing]);
 
   const createdAt = useMemo(() => {
     return format(new Date(user?.user.createdAt), "MMMM yyyy");
@@ -26,7 +64,12 @@ const UserBio: React.FC<UserBioProps> = ({ user }) => {
         {session?.user?.email == user?.user.email ? (
           <Button secondary label="Edit" onClick={editModal.onOpen} />
         ) : (
-          <Button onClick={() => {}} label="Follow" secondary />
+          <Button
+            onClick={handleFollow}
+            label={isFollowing ? "Unfollow" : "Follow"}
+            secondary={!isFollowing}
+            outline={isFollowing}
+          />
         )}
       </div>
 
@@ -48,11 +91,11 @@ const UserBio: React.FC<UserBioProps> = ({ user }) => {
 
         <div className="flex flex-row items-center mt-4 gap-6">
           <div className=" flex flex-row items-center gap-1">
-            <p className=" text-white">{user?.user.followingIds.length}</p>
+            <p className=" text-white">{user?.followersCount}</p>
             <p className=" text-neutral-500">Following</p>
           </div>
           <div className=" flex flex-row items-center gap-1">
-            <p className=" text-white">{user?.followersCount}</p>
+            <p className=" text-white">{user?.user.followingIds.length}</p>
             <p className=" text-neutral-500">Followers</p>
           </div>
         </div>
