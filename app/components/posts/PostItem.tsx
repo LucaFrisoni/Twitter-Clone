@@ -4,17 +4,19 @@ import { Post, User } from "@/types";
 import { useRouter } from "next/navigation";
 import useLoginModel from "@/hooks/zustandHooks/useLoginModel";
 import { useSession } from "next-auth/react";
-import { useUserEmail } from "@/hooks/useUser";
+
 import { useSelector } from "react-redux";
 import Avatar from "../Avatar";
 import { formatDistanceToNowStrict } from "date-fns";
-import { AiOutlineHeart, AiOutlineMessage } from "react-icons/ai";
+import { AiOutlineHeart, AiFillHeart, AiOutlineMessage } from "react-icons/ai";
+import toast from "react-hot-toast";
+import axios from "axios";
 
 interface PostItemProps {
   data: Post;
   userId?: string;
 }
-
+export const revalidate = 0;
 const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
   const { data: session, status } = useSession();
 
@@ -34,17 +36,42 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
   const goToPost = useCallback(
     (event: any) => {
       event.stopPropagation();
-      router.push(`posts/${data.id}`);
+      router.push(`http://localhost:3000/posts/${data.id}`);
     },
-    [router, data?.id]
+    [router, data]
   );
 
+  const isLiked = useMemo(() => {
+    const list = data.likeIds || [];
+    return list.includes(user?.id);
+  }, [user?.likedIds, data, router]);
+
   const onLike = useCallback(
-    (event: any) => {
+    async (event: any) => {
       event.stopPropagation();
-      loginModal.onOpen();
+      if (!session) {
+        return loginModal.onOpen();
+      }
+      try {
+        if (isLiked) {
+          await axios.delete(
+            `http://localhost:3000/api/like?postId=${data.id}&currentUserId=${user?.id}`
+          );
+          toast.success("Post Unliked");
+          router.refresh();
+        } else {
+          await axios.post("http://localhost:3000/api/like", {
+            postId: data.id,
+            currentUserId: user.id,
+          });
+          toast.success("Post Liked");
+          router.refresh();
+        }
+      } catch (error) {
+        toast.error("Something went wrong");
+      }
     },
-    [loginModal]
+    [loginModal, user, data.id, router, isLiked]
   );
 
   const createdAt = useMemo(() => {
@@ -61,7 +88,10 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
       onClick={goToPost}
     >
       <div className=" flex flex-row items-start gap-3">
-        <Avatar profileImage={data.user?.profileImage} />
+   
+          <Avatar profileImage={data.user?.profileImage} userId={data.user?.id} />
+   
+
         <div>
           <div className="flex flex-row items-center gap-2 ">
             <p className=" text-white font-semibold cursor-pointer hover:underline">
@@ -81,9 +111,17 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
               <AiOutlineMessage size={20} />
               <p>{data.comments?.length || 0}</p>
             </div>
-            <div onClick={onLike} className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer transition hover:text-red-500">
-              <AiOutlineHeart size={20} />
-              <p>{data.comments?.length || 0}</p>
+            <div
+              onClick={onLike}
+              className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer transition hover:text-red-500"
+            >
+              {isLiked ? (
+                <AiFillHeart size={20} />
+              ) : (
+                <AiOutlineHeart size={20} />
+              )}
+
+              <p>{data.likeIds?.length}</p>
             </div>
           </div>
         </div>

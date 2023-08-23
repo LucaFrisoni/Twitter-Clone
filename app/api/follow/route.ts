@@ -1,4 +1,3 @@
-import { useUser } from "@/hooks/useUser";
 import prisma from "@/libs/prismaDb";
 import { NextResponse } from "next/server";
 

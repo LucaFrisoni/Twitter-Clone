@@ -1,4 +1,3 @@
-import bcrypt from "bcrypt";
 import prisma from "@/libs/prismaDb";
 import { NextResponse } from "next/server";
 import { useUser, useUserEmail } from "@/hooks/useUser";
