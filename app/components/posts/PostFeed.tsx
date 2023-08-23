@@ -7,12 +7,16 @@ interface PostFeedProps {
 }
 
 const PostFeed: React.FC<PostFeedProps> = async ({ userId }) => {
-  const usePostsTweet = await usePostTweet("get");
-//   console.log("Post", usePostsTweet);
+ 
+  let usePostsTweet = await usePostTweet("get");
+  if (userId) {
+    usePostsTweet = await usePostTweet("get", userId);
+  }
+  // console.log("Post", usePostsTweet);
   return (
     <>
       {usePostsTweet.map((tweet: Post) => {
-        <PostItem userId={userId} key={tweet.id} data={tweet} />;
+        return <PostItem userId={userId} key={tweet.id} data={tweet} />;
       })}
     </>
   );

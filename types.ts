@@ -25,6 +25,8 @@ export interface Post {
   likeIds?: string[];
   user?: User;
   comments?: Comment[];
+  createdAt: string; 
+  updatedAt: string;
 }
 
 export interface Comment {

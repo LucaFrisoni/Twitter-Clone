@@ -1,7 +1,7 @@
 import bcrypt from "bcrypt";
 import prisma from "@/libs/prismaDb";
 import { NextResponse } from "next/server";
-import { useUserEmail } from "@/hooks/useUser";
+import { useUser, useUserEmail } from "@/hooks/useUser";
 
 interface RequestBody {
   email: string;
@@ -28,12 +28,13 @@ export async function POST(request: Request) {
 export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
-    if (email) {
-      const user = await useUserEmail(email);
+    const userId = searchParams.get("userId");
+    if (userId) {
+      const user = await useUser(userId);
       const posts = await prisma.post.findMany({
-        where: { userId: user.id },
+        where: { userId: user.user.id },
         include: { user: true, comments: true },
+        orderBy: { createdAt: "desc" },
       });
       return NextResponse.json(posts, { status: 200 });
     } else {
@@ -42,6 +43,7 @@ export async function GET(request: Request) {
           user: true,
           comments: true,
         },
+        orderBy: { createdAt: "desc" },
       });
       return NextResponse.json(posts, { status: 200 });
     }
