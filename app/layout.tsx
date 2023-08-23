@@ -4,7 +4,7 @@ import { Inter } from "next/font/google";
 import Layout from "./components/Layout";
 import ModalProvider from "@/provider/ModalProvider";
 import { Toaster } from "react-hot-toast";
-
+import { ProviderRedux } from "@/provider/ReduxProvider";
 import SessionProviderNext from "@/provider/SessionProviderNext";
 
 const inter = Inter({ subsets: ["latin"] });
@@ -22,11 +22,13 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-        <SessionProviderNext>
-          <Toaster />
-          <ModalProvider />
-          <Layout>{children}</Layout>
-        </SessionProviderNext>
+        <ProviderRedux>
+          <SessionProviderNext>
+            <Toaster />
+            <ModalProvider />
+            <Layout>{children}</Layout>
+          </SessionProviderNext>
+        </ProviderRedux>
       </body>
     </html>
   );

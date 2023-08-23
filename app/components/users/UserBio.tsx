@@ -4,7 +4,7 @@ import React, { useMemo } from "react";
 import { format } from "date-fns";
 import Button from "../Button";
 import { BiCalendar } from "react-icons/bi";
-import useEditModel from "@/hooks/useEditModel";
+import useEditModel from "@/hooks/zustandHooks/useEditModel";
 
 interface UserBioProps {
   user: any;
@@ -12,7 +12,7 @@ interface UserBioProps {
 
 const UserBio: React.FC<UserBioProps> = ({ user }) => {
   const { data: session, status } = useSession();
-  console.log("Session", session);
+
 
   const editModal = useEditModel();
 

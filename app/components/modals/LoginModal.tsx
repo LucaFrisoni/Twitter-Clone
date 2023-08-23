@@ -1,9 +1,9 @@
 "use client";
-import useLoginModel from "@/hooks/useLoginModel";
+import useLoginModel from "@/hooks/zustandHooks/useLoginModel";
 import React, { useCallback, useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
-import useRegisterModel from "@/hooks/useRegisterModal";
+import useRegisterModel from "@/hooks/zustandHooks/useRegisterModal";
 import { signIn } from "next-auth/react";
 
 const LoginModal = () => {

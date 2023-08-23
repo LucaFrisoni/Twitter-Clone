@@ -6,22 +6,36 @@ import { useRouter } from "next/navigation";
 import React, { useCallback, useEffect, useState } from "react";
 
 interface AvatarProps {
-  userId: string;
+  userId?: string | undefined;
   isLarge?: boolean;
   hasborder?: boolean;
+  profileImage?: string;
+  flag?: boolean;
 }
 
-const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasborder }) => {
+const Avatar: React.FC<AvatarProps> = ({
+  userId,
+  isLarge,
+  hasborder,
+  profileImage,
+  flag,
+}) => {
   const router = useRouter();
+
   const [user, setUser] = useState<User | null>(null);
 
   const fetchUser = async () => {
-    const { user } = await useUser(userId);
-    setUser(user);
+    if (userId) {
+      const { user } = await useUser(userId);
+      setUser(user);
+    }
   };
-  useEffect(() => {
-    fetchUser(); // Llamar a "fetchUser" dentro de "useEffect" para que se ejecute después del montaje.
-  }, [userId]);
+
+  if (flag) {
+    useEffect(() => {
+      fetchUser(); // Llamar a "fetchUser" dentro de "useEffect" para que se ejecute después del montaje.
+    }, []);
+  }
 
   const onClick = useCallback(
     (event: any) => {
@@ -54,7 +68,7 @@ const Avatar: React.FC<AvatarProps> = ({ userId, isLarge, hasborder }) => {
         }}
         alt="Avatar"
         onClick={onClick}
-        src={user?.profileImage || "/images/placeholder.png"}
+        src={profileImage || user?.profileImage || "/images/placeholder.png"}
       />
     </div>
   );

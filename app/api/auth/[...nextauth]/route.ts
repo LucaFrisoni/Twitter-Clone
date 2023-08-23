@@ -1,4 +1,3 @@
-
 import bcrypt from "bcrypt";
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
@@ -6,6 +5,7 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 
 import prisma from "@/libs/prismaDb";
 import { toast } from "react-hot-toast";
+
 
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
@@ -45,6 +45,7 @@ const handler = NextAuth({
           return null; //
         }
 
+      
         return user;
       },
     }),

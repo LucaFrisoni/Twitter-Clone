@@ -2,7 +2,7 @@
 import React, { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 
-import useEditModel from "@/hooks/useEditModel";
+import useEditModel from "@/hooks/zustandHooks/useEditModel";
 import { useUserEmail } from "@/hooks/useUser";
 
 import { toast } from "react-hot-toast";
@@ -13,11 +13,10 @@ import Modal from "../Modal";
 import Input from "../Input";
 import { User, Post, Comment, Notification } from "../../../types"; // Importa los tipos desde tu archivo types.ts
 import ImageUpload from "../ImageUpload";
-
-
+import { useSelector } from "react-redux";
 
 const EditModal = () => {
-  const { data: session, status } = useSession();
+
   const editModal = useEditModel();
   const router = useRouter();
 
@@ -28,18 +27,10 @@ const EditModal = () => {
   const [bio, setBio] = useState<string | undefined>("");
   const [email, setEmail] = useState<string | undefined>("");
 
-  const [user, setUser] = useState<User | null>(null);
-  const fetchUser = async () => {
-    const user = await useUserEmail(session?.user?.email);
-    setUser(user);
-  };
 
-  useEffect(() => {
-    if (session) {
-      fetchUser();
-    }
-    // Llamar a "fetchUser" dentro de "useEffect" para que se ejecute después del montaje.
-  }, [session]);
+  const user = useSelector((state: any) => state.user);
+
+
 
   useEffect(() => {
     setEmail(user?.email);
@@ -72,7 +63,7 @@ const EditModal = () => {
       });
       editModal.onClose();
       router.refresh();
-    
+
       toast.success("Update");
     } catch (error) {
       toast.error("Something went wrong");
@@ -88,7 +79,6 @@ const EditModal = () => {
         disabled={isLoading}
         onChange={(image) => {
           setProfileImage(image);
-        
         }}
         label="Upload profile image"
       />

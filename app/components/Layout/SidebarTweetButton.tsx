@@ -2,7 +2,7 @@
 import React, { useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { FaFeather } from "react-icons/fa";
-import useLoginModel from "@/hooks/useLoginModel";
+import useLoginModel from "@/hooks/zustandHooks/useLoginModel";
 const SidebarTweetButton = () => {
   const router = useRouter();
   const loginModal = useLoginModel();

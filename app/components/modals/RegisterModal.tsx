@@ -3,8 +3,8 @@
 import React, { useCallback, useState } from "react";
 import Input from "../Input";
 import Modal from "../Modal";
-import useRegisterModel from "@/hooks/useRegisterModal";
-import useLoginModel from "@/hooks/useLoginModel";
+import useRegisterModel from "@/hooks/zustandHooks/useRegisterModal";
+import useLoginModel from "@/hooks/zustandHooks/useLoginModel";
 import axios from "axios";
 import { toast } from "react-hot-toast";
 import { signIn } from "next-auth/react";

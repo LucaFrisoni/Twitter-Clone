@@ -1,5 +1,5 @@
 "use client";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { BiLogOut } from "react-icons/bi";
 import { BsHouseFill, BsBellFill } from "react-icons/bs";
 import { FaUser } from "react-icons/fa";
@@ -7,9 +7,35 @@ import Sidebarlogo from "./Sidebarlogo";
 import SidebarItem from "./SidebarItem";
 import SidebarTweetButton from "./SidebarTweetButton";
 import { signOut, useSession } from "next-auth/react";
-import { data } from "autoprefixer";
+
+import { User } from "@/types";
+import { useUserEmail } from "@/hooks/useUser";
+
+import { useDispatch } from "react-redux";
+import { logout, setUser } from "@/redux/actions";
 
 const Sidebar = () => {
+  const { data: session, status } = useSession();
+
+console.log("me Renderice")
+
+
+  const dispatch = useDispatch();
+
+  const [user, setUserr] = useState<User | null>(null);
+  const fetchUser = async () => {
+    const user = await useUserEmail(session?.user?.email);
+    setUserr(user);
+    dispatch(setUser(user));
+  };
+
+  useEffect(() => {
+    if (session) {
+      fetchUser();
+    }
+    // Llamar a "fetchUser" dentro de "useEffect" para que se ejecute después del montaje.
+  }, [session]);
+
   const items = [
     {
       icon: BsHouseFill,
@@ -25,13 +51,16 @@ const Sidebar = () => {
     {
       icon: FaUser,
       label: "Profile",
-      href: `/users/`,
+      href: `/users/${user?.id}`,
       auth: true,
     },
   ];
 
-  const { data: session, status } = useSession();
-  console.log("session =>", session);
+  const handleLogOut = () => {
+    signOut();
+    dispatch(logout());
+  };
+
   return (
     <div className=" col-span-1 h-full pr-4 md:pr-6">
       <div className=" flex flex-col items-end">
@@ -49,7 +78,7 @@ const Sidebar = () => {
           {session?.user && (
             <SidebarItem
               icon={BiLogOut}
-              onClick={() => signOut()}
+              onClick={() => handleLogOut()}
               label="logout"
             />
           )}
