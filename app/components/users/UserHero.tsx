@@ -7,7 +7,6 @@ interface UserHeroProps {
 }
 
 const UserHero: React.FC<UserHeroProps> = async ({ user }) => {
-
   return (
     <div className="">
       <div className=" bg-neutral-700 h-44 relative">
@@ -20,7 +19,7 @@ const UserHero: React.FC<UserHeroProps> = async ({ user }) => {
           />
         )}
         <div className=" absolute -bottom-16 left-4">
-          <Avatar userId={user?.user.id} isLarge hasborder />
+          <Avatar userId={user?.user.id} isLarge hasborder flag={true} />
         </div>
       </div>
     </div>
