@@ -33,7 +33,20 @@ const Form: React.FC<FormProps> = ({ placeholder, isComment, postId }) => {
     try {
       setIsLoading(true);
       const email = user?.email;
-      await axios.post("api/posts", { body, email });
+
+      if (isComment) {
+        await axios.post("http://localhost:3000/api/comments", {
+          body,
+          postId,
+          currentUserId: user.id,
+        });
+        toast.success("Comment Created");
+        setBody("");
+        router.refresh();
+        setIsLoading(false);
+        return;
+      }
+      await axios.post("http://localhost:3000/api/posts", { body, email });
 
       toast.success("Tweet Created");
       setBody("");
@@ -43,7 +56,7 @@ const Form: React.FC<FormProps> = ({ placeholder, isComment, postId }) => {
     } finally {
       setIsLoading(false);
     }
-  }, [body, router]);
+  }, [body, router, isComment, postId]);
 
   return (
     <div className=" border-b-[1px] border-neutral-800 px-5 py-2">

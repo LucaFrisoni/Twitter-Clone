@@ -11,17 +11,20 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { AiOutlineHeart, AiFillHeart, AiOutlineMessage } from "react-icons/ai";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { ClipLoader } from "react-spinners";
 
 interface PostItemProps {
   data: Post;
   userId?: string;
 }
-export const revalidate = 0;
+
 const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
   const { data: session, status } = useSession();
 
   const router = useRouter();
   const loginModal = useLoginModel();
+
+  const [isDataLoaded, setIsDataLoaded] = useState(false); // New state
 
   const user = useSelector((state: any) => state.user);
 
@@ -32,6 +35,15 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
     },
     [router, data.user?.id]
   );
+useEffect(() => {
+  // Verificar si los datos necesarios están cargados aquí.
+  // Por ejemplo, si data.likeIds es la propiedad que necesitas,
+  // podrías verificar si existe data.likeIds.
+
+  if (data.likeIds) {
+    setIsDataLoaded(true);
+  }
+}, [data.likeIds]);
 
   const goToPost = useCallback(
     (event: any) => {
@@ -42,9 +54,13 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
   );
 
   const isLiked = useMemo(() => {
+    if (!isDataLoaded) {
+      return false; // O cualquier valor predeterminado según tu lógica
+    }
+
     const list = data.likeIds || [];
     return list.includes(user?.id);
-  }, [user?.likedIds, data, router]);
+  }, [isDataLoaded, user?.id, data.likeIds]);
 
   const onLike = useCallback(
     async (event: any) => {
@@ -88,9 +104,7 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
       onClick={goToPost}
     >
       <div className=" flex flex-row items-start gap-3">
-   
-          <Avatar profileImage={data.user?.profileImage} userId={data.user?.id} />
-   
+        <Avatar profileImage={data.user?.profileImage} userId={data.user?.id} />
 
         <div>
           <div className="flex flex-row items-center gap-2 ">
@@ -116,7 +130,7 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
               className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer transition hover:text-red-500"
             >
               {isLiked ? (
-                <AiFillHeart size={20} />
+                <AiFillHeart color={"red"} size={20} />
               ) : (
                 <AiOutlineHeart size={20} />
               )}
