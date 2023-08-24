@@ -11,7 +11,7 @@ import { formatDistanceToNowStrict } from "date-fns";
 import { AiOutlineHeart, AiFillHeart, AiOutlineMessage } from "react-icons/ai";
 import toast from "react-hot-toast";
 import axios from "axios";
-import { ClipLoader } from "react-spinners";
+
 
 interface PostItemProps {
   data: Post;
@@ -31,14 +31,15 @@ const PostItem: React.FC<PostItemProps> = ({ data, userId }) => {
   const goToUser = useCallback(
     (event: any) => {
       event.stopPropagation();
-      router.push(`users/${data.user?.id}`);
+      router.push(`http://localhost:3000/users/${data.user?.id}`);
     },
     [router, data.user?.id]
   );
+
+
+  
 useEffect(() => {
-  // Verificar si los datos necesarios están cargados aquí.
-  // Por ejemplo, si data.likeIds es la propiedad que necesitas,
-  // podrías verificar si existe data.likeIds.
+
 
   if (data.likeIds) {
     setIsDataLoaded(true);

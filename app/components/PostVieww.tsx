@@ -4,12 +4,14 @@ import { ClipLoader } from "react-spinners";
 import Header from "./Header";
 import PostItem from "./posts/PostItem";
 import Form from "./Form";
+import { Post } from "@/types";
+import CommentFeed from "./posts/CommentFeed";
 interface PostViewwProps {
   postId: string;
 }
 export const revalidate = 0
 const PostVieww = ({ postId }: PostViewwProps) => {
-  const [post, setPost] = useState(null);
+  const [post, setPost] = useState<Post>();
   const [isLoading, setIsLoading] = useState(true);
 
   const fetchPost = async () => {
@@ -35,6 +37,7 @@ const PostVieww = ({ postId }: PostViewwProps) => {
       <PostItem data={post} />
       <Form postId={postId as string} isComment placeholder="Tweet your reply"
       />
+      <CommentFeed comments={post?.comments} />
     </>
   );
 };
