@@ -35,13 +35,13 @@ const UserBio: React.FC<UserBioProps> = ({ user }) => {
     try {
       if (isFollowing) {
         await axios.delete(
-          `/api/follow?userId=${user?.user.id}&currentUserId=${userr.id}`
+          `http://localhost:3000/api/follow?userId=${user?.user.id}&currentUserId=${userr.id}`
         );
 
         toast.success("User Unfollowed");
         router.refresh();
       } else {
-        await axios.post("/api/follow", {
+        await axios.post("http://localhost:3000/api/follow", {
           userId: user?.user.id,
           currentUserId: userr.id,
         });
