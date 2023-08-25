@@ -33,7 +33,12 @@ const RegisterModal = () => {
 
       //TODO ADD LOGIN
 
-      await axios.post("api/register", { email, password, username, name });
+      await axios.post("http://localhost:3000/api/register", {
+        email,
+        password,
+        username,
+        name,
+      });
       toast.success("Account Created");
 
       registerModal.onClose();

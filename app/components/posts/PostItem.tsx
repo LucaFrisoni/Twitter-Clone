@@ -120,7 +120,9 @@ useEffect(() => {
             </span>
             <span className=" text-neutral-500 text-sm">{createdAt}</span>
           </div>
-          <div className=" text-white mt-1">{data.body}</div>
+          <div className=" text-white mt-1 max-w-sm ">
+            <p className="whitespace-normal break-words">{data.body}</p>
+          </div>
           <div className=" flex flex-row items-center mt-3 gap-10">
             <div className="flex flex-row items-center text-neutral-500 gap-2 cursor-pointer transition hover:text-sky-500">
               <AiOutlineMessage size={20} />

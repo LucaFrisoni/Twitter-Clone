@@ -19,6 +19,23 @@ export async function POST(request: Request) {
     if (!postLiked) {
       throw new Error("Invalid ID");
     }
+    await prisma.notification.create({
+      data: {
+        body: "Someone liked your tweet!",
+        userId: postLiked.userId,
+      },
+    });
+
+    if (postLiked?.userId) {
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: postLiked.userId,
+        },
+        data: {
+          hasNotification: true,
+        },
+      });
+    }
 
     let updatedLikeIDS = [...(postLiked?.likeIds || [])];
 
@@ -56,6 +73,22 @@ export async function DELETE(request: Request) {
       if (!postLiked) {
         throw new Error("Invalid ID");
       }
+
+      const notificationToDelete = await prisma.notification.findFirst({
+        where: {
+          userId: postLiked.userId,
+          body: "Someone liked your tweet!",
+        },
+      });
+      if (notificationToDelete) {
+        await prisma.notification.delete({
+          where: {
+            id: notificationToDelete.id,
+          },
+        });
+      }
+     
+
       let updatedLikeIDS = [...(postLiked?.likeIds || [])];
 
       updatedLikeIDS = updatedLikeIDS.filter((i) => i != currentUserId);
@@ -68,6 +101,7 @@ export async function DELETE(request: Request) {
           likeIds: updatedLikeIDS,
         },
       });
+
       return NextResponse.json(updatedPost, { status: 200 });
     }
   } catch (error) {

@@ -20,6 +20,24 @@ export async function POST(request: Request) {
       throw new Error("Invalid ID");
     }
 
+    await prisma.notification.create({
+      data: {
+        body: "Someone Follow you!",
+        userId: userId,
+      },
+    });
+
+    if (userId) {
+      const updatedUser = await prisma.user.update({
+        where: {
+          id: userId,
+        },
+        data: {
+          hasNotification: true,
+        },
+      });
+    }
+
     let updatedFollowingIDS = [...(userFollow?.followingIds || [])];
 
     updatedFollowingIDS.push(currentUserId);
@@ -56,6 +74,21 @@ export async function DELETE(request: Request) {
       if (!userFollow) {
         throw new Error("Invalid ID");
       }
+
+      const notificationToDelete = await prisma.notification.findFirst({
+        where: {
+          userId: userId,
+          body: "Someone Follow you!",
+        },
+      });
+      if (notificationToDelete) {
+        await prisma.notification.delete({
+          where: {
+            id: notificationToDelete.id,
+          },
+        });
+      }
+
       let updatedFollowingIDS = [...(userFollow?.followingIds || [])];
 
       updatedFollowingIDS = updatedFollowingIDS.filter(

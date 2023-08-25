@@ -11,13 +11,12 @@ import { signOut, useSession } from "next-auth/react";
 import { User } from "@/types";
 import { useUserEmail } from "@/hooks/useUser";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { logout, setUser } from "@/redux/actions";
 
 const Sidebar = () => {
   const { data: session, status } = useSession();
 
-console.log("me Renderice")
 
 
   const dispatch = useDispatch();
@@ -47,6 +46,7 @@ console.log("me Renderice")
       label: "Notifications",
       href: "/notifications",
       auth: true,
+      alert: user?.hasNotification,
     },
     {
       icon: FaUser,
@@ -73,6 +73,7 @@ console.log("me Renderice")
               icon={nav.icon}
               label={nav.label}
               auth={nav.auth}
+              alert={nav.alert}
             />
           ))}
           {session?.user && (

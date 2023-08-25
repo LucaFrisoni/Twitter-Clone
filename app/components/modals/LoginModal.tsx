@@ -5,6 +5,7 @@ import Input from "../Input";
 import Modal from "../Modal";
 import useRegisterModel from "@/hooks/zustandHooks/useRegisterModal";
 import { signIn } from "next-auth/react";
+import toast from "react-hot-toast";
 
 const LoginModal = () => {
   const loginModal = useLoginModel();
@@ -27,9 +28,26 @@ const LoginModal = () => {
       setIsLoading(true);
 
       //TODO ADD LOGIN
+      if (!email || !password) {
+        return toast.error("You must enter you email and password");
+      }
 
-      await signIn("credentials", { email, password });
+      const result = await signIn("credentials", {
+        email,
+        password,
+        redirect: false, // Importante para que no redirija en caso de error
+      });
 
+      if (result?.error) {
+        // Manejar los errores en base a la información en result.error
+        if (result.error === "User not found") {
+          toast.error("Email not found");
+        } else if (result.error === "Wrong Password") {
+          toast.error("Incorrect password. Please try again.");
+        } else {
+          toast.error("An error occurred. Please try again later.");
+        }
+      }
       loginModal.onClose();
     } catch (error) {
       console.log(error);

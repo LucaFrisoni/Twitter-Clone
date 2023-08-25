@@ -6,7 +6,6 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import prisma from "@/libs/prismaDb";
 import { toast } from "react-hot-toast";
 
-
 const handler = NextAuth({
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -18,8 +17,7 @@ const handler = NextAuth({
       },
       async authorize(credentials) {
         if (!credentials?.email || !credentials.password) {
-          toast.error("Invalid credentials"); // Mostrar mensaje de error utilizando toast
-          return null; //
+          throw new Error("Email or Password missing");
         }
 
         const user = await prisma.user.findUnique({
@@ -29,9 +27,7 @@ const handler = NextAuth({
         });
 
         if (!user || !user?.hashedPassword) {
-          console.log("aca es 2");
-          toast.error("You must put a password"); // Mostrar mensaje de error utilizando toast
-          return null; //
+          throw new Error("User not found");
         }
 
         const isCorrectPassword = await bcrypt.compare(
@@ -40,12 +36,10 @@ const handler = NextAuth({
         );
 
         if (!isCorrectPassword) {
-          console.log("aca es 3");
-          toast.error("Password Incorrect"); // Mostrar mensaje de error utilizando toast
+          throw new Error("Wrong Password");
           return null; //
         }
 
-      
         return user;
       },
     }),

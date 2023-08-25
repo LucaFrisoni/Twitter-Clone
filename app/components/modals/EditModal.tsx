@@ -16,7 +16,6 @@ import ImageUpload from "../ImageUpload";
 import { useSelector } from "react-redux";
 
 const EditModal = () => {
-
   const editModal = useEditModel();
   const router = useRouter();
 
@@ -27,10 +26,7 @@ const EditModal = () => {
   const [bio, setBio] = useState<string | undefined>("");
   const [email, setEmail] = useState<string | undefined>("");
 
-
   const user = useSelector((state: any) => state.user);
-
-
 
   useEffect(() => {
     setEmail(user?.email);
@@ -53,7 +49,7 @@ const EditModal = () => {
   const onSubmit = useCallback(async () => {
     try {
       setIsLoading(true);
-      await axios.patch("/api/edit", {
+      const result = await axios.patch("http://localhost:3000/api/edit", {
         email,
         name,
         profileImage,
@@ -63,9 +59,12 @@ const EditModal = () => {
       });
       editModal.onClose();
       router.refresh();
-
       toast.success("Update");
-    } catch (error) {
+    } catch (error: any) {
+      console.log("el errorrr", error);
+      if (error.response.data == "Username Already Exist") {
+        return toast.error("Username Already Exist");
+      }
       toast.error("Something went wrong");
     } finally {
       setIsLoading(false);
