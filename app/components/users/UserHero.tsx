@@ -14,12 +14,12 @@ const UserHero: React.FC<UserHeroProps> = async ({ user }) => {
           <Image
             src={user.user.coverImage}
             fill
-            alt="cover iamge"
-            style={{ objectFit: "contain" }}
+            alt="cover image"
+            style={{ objectFit: "cover" }}
           />
         )}
         <div className=" absolute -bottom-16 left-4">
-          <Avatar userId={user?.user.id} isLarge hasborder flag={true} />
+          <Avatar profileImage={user?.user.profileImage} isLarge hasborder flag={true} />
         </div>
       </div>
     </div>
